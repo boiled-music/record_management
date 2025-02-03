@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문서 목록</title>
+</head>
+<body>
+    <h1>보유 문서 목록</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>문서 제목</th>
+                <th>관리번호</th>
+                <th>서고 위치</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents %}
+            <tr>
+                <td>{{ document[0] }}</td>
+                <td>{{ document[1] }}</td>
+                <td>{{ document[2] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
