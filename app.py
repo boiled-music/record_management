@@ -10,7 +10,8 @@ def get_db_connection():
         user='root',
         password='a12345678!',  # 자신의 MariaDB 비밀번호 입력
         database='record_management_db',
-        charset='utf8mb4'
+        charset='utf8mb4',
+        collation='utf8mb4_general_ci'  # Collation 명시
     )
 
 @app.route('/')
