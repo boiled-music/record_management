@@ -2,28 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>문서 목록</title>
+    <title>보유 문서 목록</title>
 </head>
 <body>
-    <h1>보유 문서 목록</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>문서 제목</th>
-                <th>관리번호</th>
-                <th>서고 위치</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for document in documents %}
-            <tr>
-                <td>{{ document[0] }}</td>
-                <td>{{ document[1] }}</td>
-                <td>{{ document[2] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+    <h1>📚 보유 문서 목록</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>관리번호</th>
+            <th>기관명</th>
+            <th>문서 유형</th>
+            <th>수량</th>
+        </tr>
+        {% for doc in documents %}
+        <tr>
+            <td>{{ doc.id }}</td>
+            <td>{{ doc.management_number }}</td>
+            <td>{{ doc.current_institution }}</td>
+            <td>{{ doc.document_type }}</td>
+            <td>{{ doc.quantity }}</td>
+        </tr>
+        {% endfor %}
     </table>
 </body>
 </html>
