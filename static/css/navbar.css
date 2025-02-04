@@ -1,0 +1,25 @@
+/* static/css/navbar.css */
+
+.navbar {
+    background-color: #8CC3B2; /* 네비게이션 바 배경색 */
+    position: fixed;           /* 항상 상단에 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+
+.navbar-brand, .nav-link {
+    color: white !important;   /* 텍스트 색상 흰색으로 고정 */
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    background-color: #76b09f; /* 호버 효과 */
+    color: white !important;
+}
+
+body {
+    padding-top: 70px; /* 네비게이션 바 아래로 콘텐츠 위치 */
+}
