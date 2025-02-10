@@ -28,95 +28,118 @@
         </div>
     </nav>
 
-    <!-- 메인 콘텐츠 -->
-    <div class="container my-4">
-        <div class="text-center mb-4">
-            <h2>기록물 통합 검색</h2>
-            <input type="text" class="form-control w-50 mx-auto" placeholder="기록물을 검색하세요">
-        </div>
+    <!-- ✅ 검색 기능 -->
+    <div class="container mt-4 text-center">
+        <h2>기록물 통합 검색</h2>
+        <form method="GET" action="/documents" class="d-flex justify-content-center">
+            <input type="text" name="search_query" class="form-control w-50" placeholder="기록물을 검색하세요" value="{{ request.args.get('search_query', '') }}">
+            <button type="submit" class="btn btn-primary ms-2">검색</button>
+        </form>
+    </div>
 
-        <!-- 통계자료 -->
-        <div class="statistics">
-            <h4>기록관 보유현황 (보존기간별)</h4>
-            <table class="table table-bordered text-center">
-                <thead class="table-primary">
-                    <tr>
-                        <th>구분</th>
-                        <th>합계</th>
-                        <th>영구</th>
-                        <th>준영구</th>
-                        <th>30년</th>
-                        <th>10년</th>
-                        <th>5년</th>
-                        <th>3년</th>
-                        <th>1년</th>
-                        <th>미확인</th>
-                        <th>비고</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>합계</td>
-                        <td>53,384</td><td>3,996</td><td>30,589</td><td>2,864</td><td>2,969</td><td>8,587</td><td>225</td><td>0</td><td>4,154</td><td>-</td>
-                    </tr>
-                    <tr>
-                        <td>제1기록관</td>
-                        <td>37,137</td><td>1,886</td><td>29,492</td><td>2,343</td><td>358</td><td>1,545</td><td>70</td><td>0</td><td>1,168</td><td>관리류</td>
-                    </tr>
-                    <tr>
-                        <td>제2기록관</td>
-                        <td>15,863</td><td>2,1108</td><td>1,097</td><td>521</td><td>953</td><td>7,042</td><td>155</td><td>0</td><td>2,986</td><td>-</td>
-                    </tr>
-                    <tr>
-                        <td>행정박물관</td>
-                        <td>384</td><td>384</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>행정간행물</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>기록관 보유현황 (생산 유형별)</h4>
-            <table class="table table-bordered text-center">
-                <thead class="table-primary">
-                    <tr>
-                        <th>구분</th>
-                        <th>합계</th>
-                        <th>문서</th>
-                        <th>카드</th>
-                        <th>대장</th>
-                        <th>도면</th>
-                        <th>필름</th>
-                        <th>앨범</th>
-                        <th>테이프</th>
-                        <th>간행물</th>
-                        <th>행정박물</th>
-                        <th>비고</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>합계</td>
-                        <td>53,384</td><td>47,917</td><td>6</td><td>1,068</td><td>949</td><td>18</td><td>1</td><td>0</td><td>2,766</td><td>659</td><td>-</td>
-                    </tr>
-                    <tr>
-                        <td>제1기록관</td>
-                        <td>37,137</td><td>35,122</td><td>6</td><td>853</td><td>862</td><td>18</td><td>1</td><td>0</td><td>0</td><td>275</td><td>-</td>
-                    </tr>
-                    <tr>
-                        <td>제2기록관</td>
-                        <td>15,863</td><td>12,795</td><td>0</td><td>215</td><td>87</td><td>0</td><td>0</td><td>0</td><td>2,766</td><td>-</td><td>-</td>
-                    </tr>
-                    <tr>
-                        <td>행정박물관</td>
-                        <td>384</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>384</td><td>-</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+    <!-- ✅ 기록관 보유현황 (보존기간별) -->
+    <div class="container mt-4">
+        <h4>기록관 보유현황 (보존기간별)</h4>
+        <table class="table table-bordered text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th>구분</th>
+                    <th>합계</th>
+                    <th>영구</th>
+                    <th>준영구</th>
+                    <th>30년</th>
+                    <th>10년</th>
+                    <th>5년</th>
+                    <th>3년</th>
+                    <th>1년</th>
+                    <th>미확인</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>합계</td>
+                    <td>{{ total_sums["합계"] }}</td>
+                    <td>{{ total_sums["영구"] }}</td>
+                    <td>{{ total_sums["준영구"] }}</td>
+                    <td>{{ total_sums["30년"] }}</td>
+                    <td>{{ total_sums["10년"] }}</td>
+                    <td>{{ total_sums["5년"] }}</td>
+                    <td>{{ total_sums["3년"] }}</td>
+                    <td>{{ total_sums["1년"] }}</td>
+                    <td>{{ total_sums["미확인"] }}</td>
+                </tr>
+                {% for location, data in storage_data.items() %}
+                <tr>
+                    <td>{{ location }}</td>
+                    <td>{{ location_totals[location] }}</td>
+                    <td>{{ data["영구"] }}</td>
+                    <td>{{ data["준영구"] }}</td>
+                    <td>{{ data["30년"] }}</td>
+                    <td>{{ data["10년"] }}</td>
+                    <td>{{ data["5년"] }}</td>
+                    <td>{{ data["3년"] }}</td>
+                    <td>{{ data["1년"] }}</td>
+                    <td>{{ data["미확인"] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h4>기록관 보유현황 (생산 유형별)</h4>
+        <table class="table table-bordered text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th>구분</th>
+                    <th>합계</th>
+                    <th>문서</th>
+                    <th>카드</th>
+                    <th>대장</th>
+                    <th>도면</th>
+                    <th>필름</th>
+                    <th>앨범</th>
+                    <th>테이프</th>
+                    <th>간행물</th>
+                    <th>행정박물</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ✅ 전체 합계 -->
+                <tr>
+                    <td>합계</td>
+                    <td>{{ total_format_sums["합계"] }}</td>
+                    <td>{{ total_format_sums["문서"] }}</td>
+                    <td>{{ total_format_sums["카드"] }}</td>
+                    <td>{{ total_format_sums["대장"] }}</td>
+                    <td>{{ total_format_sums["도면"] }}</td>
+                    <td>{{ total_format_sums["필름"] }}</td>
+                    <td>{{ total_format_sums["앨범"] }}</td>
+                    <td>{{ total_format_sums["테이프"] }}</td>
+                    <td>{{ total_format_sums["간행물"] }}</td>
+                    <td>{{ total_format_sums["행정박물"] }}</td>
+                </tr>
+        
+                <!-- ✅ 제1기록관, 제2기록관, 행정박물관 개별 데이터 추가 -->
+                {% for location in ["제1기록관", "제2기록관", "행정박물관"] %}
+                <tr>
+                    <td>{{ location }}</td>
+                    <td>{{ location_format_totals.get(location, 0) }}</td>
+                    <td>{{ format_data[location].get("문서", 0) }}</td>
+                    <td>{{ format_data[location].get("카드", 0) }}</td>
+                    <td>{{ format_data[location].get("대장", 0) }}</td>
+                    <td>{{ format_data[location].get("도면", 0) }}</td>
+                    <td>{{ format_data[location].get("필름", 0) }}</td>
+                    <td>{{ format_data[location].get("앨범", 0) }}</td>
+                    <td>{{ format_data[location].get("테이프", 0) }}</td>
+                    <td>{{ format_data[location].get("간행물", 0) }}</td>
+                    <td>{{ format_data[location].get("행정박물", 0) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>        
     </div>
 
     <!-- Footer -->
     <footer class="text-center py-3 bg-light">
-        <small>© 2025 서고관리 시스템 | Version 1.0</small>
+        <small>© 2025 서고관리 시스템 | Version 0.1</small>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

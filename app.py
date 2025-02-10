@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 import mysql.connector
+import csv
+import io
 
 app = Flask(__name__)
 
@@ -14,10 +16,107 @@ def get_db_connection():
         collation='utf8mb4_general_ci'  # Collation 명시
     )
 
-# ✅ 메인 대시보드 페이지 (기본 페이지)
+# ✅ 보존기간 변환 매핑
+PRESERVATION_PERIOD_MAP = {
+    45: "영구",
+    40: "준영구",
+    30: "30년",
+    10: "10년",
+    5: "5년",
+    3: "3년",
+    1: "1년",
+    0: "미확인"
+}
+
+# ✅ 반출 순위 변환 매핑
+RETRIEVAL_PRIORITY_MAP = {
+    1: "1순위",
+    2: "2순위",
+    3: "3순위",
+    0: "미확인"
+}
+
+# ✅ 메인 대시보드 페이지 (통계 포함)
 @app.route('/')
 def main_dashboard():
-    return render_template('Main_Dashboard.html')  # 메인 대시보드 파일로 연결
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # ✅ 보존기간별 통계 초기화
+    storage_data = {
+        "제1기록관": {p: 0 for p in PRESERVATION_PERIOD_MAP.values()},
+        "제2기록관": {p: 0 for p in PRESERVATION_PERIOD_MAP.values()},
+        "행정박물관": {p: 0 for p in PRESERVATION_PERIOD_MAP.values()}
+    }
+
+    total_sums = {p: 0 for p in PRESERVATION_PERIOD_MAP.values()}
+    total_sums["합계"] = 0  # 전체 합계 초기화
+
+    cursor.execute("""
+        SELECT storage_location, preservation_period, COUNT(*) AS total
+        FROM documents
+        WHERE storage_location IN ('제1기록관', '제2기록관', '행정박물관')
+        GROUP BY storage_location, preservation_period
+    """)
+
+    location_totals = {"제1기록관": 0, "제2기록관": 0, "행정박물관": 0}
+
+    for row in cursor.fetchall():
+        location = row["storage_location"]
+        period = PRESERVATION_PERIOD_MAP.get(row["preservation_period"], "미확인")
+
+        if location in storage_data:
+            storage_data[location][period] += row["total"]
+            location_totals[location] += row["total"]
+
+        total_sums[period] += row["total"]
+        total_sums["합계"] += row["total"]
+
+    # ✅ 생산 유형별 통계 초기화
+    format_data = {
+        "제1기록관": {f: 0 for f in ["문서", "카드", "대장", "도면", "필름", "앨범", "테이프", "간행물", "행정박물"]},
+        "제2기록관": {f: 0 for f in ["문서", "카드", "대장", "도면", "필름", "앨범", "테이프", "간행물", "행정박물"]},
+        "행정박물관": {f: 0 for f in ["문서", "카드", "대장", "도면", "필름", "앨범", "테이프", "간행물", "행정박물"]}
+    }
+
+    total_format_sums = {f: 0 for f in ["합계", "문서", "카드", "대장", "도면", "필름", "앨범", "테이프", "간행물", "행정박물"]}
+
+    location_format_totals = {"제1기록관": 0, "제2기록관": 0, "행정박물관": 0}
+
+    cursor.execute("""
+        SELECT storage_location, document_format, COUNT(*) AS total
+        FROM documents
+        WHERE storage_location IN ('제1기록관', '제2기록관', '행정박물관')
+        GROUP BY storage_location, document_format
+    """)
+
+    for row in cursor.fetchall():
+        location = row["storage_location"]
+        format_type = row["document_format"]
+
+        if location in format_data:
+            format_data[location][format_type] += row["total"]
+            location_format_totals[location] += row["total"]
+
+        total_format_sums[format_type] += row["total"]
+        total_format_sums["합계"] += row["total"]
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        'Main_Dashboard.html',
+        storage_data=storage_data,
+        total_sums=total_sums,
+        format_data=format_data,
+        total_format_sums=total_format_sums,
+        location_totals=location_totals,
+        location_format_totals=location_format_totals
+    )
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 # ✅ 보유 문서 목록 페이지
 @app.route('/documents')
@@ -81,6 +180,11 @@ def documents():
     cursor.execute(query, params)
     documents = cursor.fetchall()
 
+    # ✅ 변환 적용 (보존기간, 반출 순위)
+    for doc in documents:
+        doc["preservation_period"] = PRESERVATION_PERIOD_MAP.get(doc["preservation_period"], "미확인")
+        doc["retrieval_priority"] = RETRIEVAL_PRIORITY_MAP.get(doc["retrieval_priority"], "미확인")
+
     # 전체 페이지 수 계산
     cursor.execute("SELECT COUNT(*) AS total FROM documents WHERE 1=1")
     total_documents = cursor.fetchone()['total']
@@ -104,6 +208,11 @@ def download_csv():
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM documents")
     documents = cursor.fetchall()
+
+    # ✅ 보존기간 및 반출 순위 변환 후 CSV 저장
+    for doc in documents:
+        doc["preservation_period"] = PRESERVATION_PERIOD_MAP.get(doc["preservation_period"], "미확인")
+        doc["retrieval_priority"] = RETRIEVAL_PRIORITY_MAP.get(doc["retrieval_priority"], "미확인")
 
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=documents[0].keys())
