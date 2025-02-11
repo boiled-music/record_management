@@ -80,7 +80,6 @@ def main_dashboard():
     }
 
     total_format_sums = {f: 0 for f in ["합계", "문서", "카드", "대장", "도면", "필름", "앨범", "테이프", "간행물", "행정박물"]}
-
     location_format_totals = {"제1기록관": 0, "제2기록관": 0, "행정박물관": 0}
 
     cursor.execute("""
@@ -113,10 +112,6 @@ def main_dashboard():
         location_totals=location_totals,
         location_format_totals=location_format_totals
     )
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
 
 # ✅ 보유 문서 목록 페이지
 @app.route('/documents')
@@ -185,8 +180,29 @@ def documents():
         doc["preservation_period"] = PRESERVATION_PERIOD_MAP.get(doc["preservation_period"], "미확인")
         doc["retrieval_priority"] = RETRIEVAL_PRIORITY_MAP.get(doc["retrieval_priority"], "미확인")
 
-    # 전체 페이지 수 계산
-    cursor.execute("SELECT COUNT(*) AS total FROM documents WHERE 1=1")
+    # 전체 페이지 수 계산 (필터링 조건 적용)
+    count_query = "SELECT COUNT(*) AS total FROM documents WHERE 1=1"
+    count_params = []
+    if management_number:
+        count_query += " AND management_number LIKE %s"
+        count_params.append(f"%{management_number}%")
+    if production_department:
+        count_query += " AND production_department LIKE %s"
+        count_params.append(f"%{production_department}%")
+    if start_year and end_year:
+        count_query += " AND production_year BETWEEN %s AND %s"
+        count_params.extend([start_year, end_year])
+    if folder_title:
+        count_query += " AND folder_title LIKE %s"
+        count_params.append(f"%{folder_title}%")
+    if preservation_period:
+        count_query += " AND preservation_period = %s"
+        count_params.append(preservation_period)
+    if document_type:
+        count_query += " AND document_type = %s"
+        count_params.append(document_type)
+
+    cursor.execute(count_query, count_params)
     total_documents = cursor.fetchone()['total']
     total_pages = (total_documents // per_page) + (1 if total_documents % per_page != 0 else 0)
 
