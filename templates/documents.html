@@ -51,23 +51,27 @@
             <div class="col-md-2">
                 <select name="preservation_period" class="form-select">
                     <option value="">보존기간 선택</option>
-                    <option value="30년">영구</option>
-                    <option value="30년">준영구</option>
-                    <option value="30년">30년</option>
-                    <option value="10년">10년</option>
-                    <option value="5년">5년</option>
-                    <option value="3년">3년</option>
-                    <option value="1년">1년</option>
+                    <option value="45">영구</option>
+                    <option value="40">준영구</option>
+                    <option value="30">30년</option>
+                    <option value="10">10년</option>
+                    <option value="5">5년</option>
+                    <option value="3">3년</option>
+                    <option value="1">1년</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <select name="document_type" class="form-select">
                     <option value="">형태 선택</option>
                     <option value="문서">문서</option>
-                    <option value="30년">대장</option>
-                    <option value="30년">카드</option>
+                    <option value="대장">대장</option>
+                    <option value="카드">카드</option>
                     <option value="도면">도면</option>
-                    <option value="사진">시청각</option>
+                    <option value="필름">필름</option>
+                    <option value="앨범">앨범</option>
+                    <option value="테이프">테이프</option>
+                    <option value="간행물">간행물</option>
+                    <option value="행정박물">행정박물</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -96,14 +100,14 @@
                 <tr>
                     <th><a href="?sort_by=id&sort_order={{ 'desc' if sort_order == 'asc' else 'asc' }}">연번 ⬍</a></th>
                     <th>관리번호</th>
-                    <th>현재기관명</th>
+                    <th>현재부서</th>
                     <th>생산부서</th>
                     <th>생산년도</th>
-                    <th>기록물철 제목</th>
                     <th>보존기간</th>
                     <th>형태</th>
                     <th>수량</th>
-                </tr>
+                    <th>기록물철 제목</th>
+                 </tr>
             </thead>
             <tbody>
                 {% for doc in documents %}
@@ -113,10 +117,10 @@
                     <td>{{ doc.current_institution }}</td>
                     <td>{{ doc.production_department }}</td>
                     <td>{{ doc.production_year }}</td>
-                    <td>{{ doc.folder_title }}</td>
                     <td>{{ doc.preservation_period }}</td>
                     <td>{{ doc.document_type }}</td>
                     <td>{{ doc.quantity }}</td>
+                    <td>{{ doc.folder_title }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
