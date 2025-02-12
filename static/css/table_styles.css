@@ -1,0 +1,59 @@
+/* table_styles.css */
+
+/* 테이블 열 너비 */
+.table-col-1 { width: 4%; }
+.table-col-2 { width: 4%; }
+.table-col-3 { width: 8%; }
+.table-col-4 { width: 8%; }
+.table-col-5 { width: 5%; }
+.table-col-6 { width: 5%; }
+.table-col-7 { width: 5%; }
+.table-col-8 { width: 4%; }
+.table-col-9 { width: 30%; }
+.table-col-10 { width: 15%; }
+.table-col-11 { width: 5%; }
+.table-col-12 { width: 10%; }
+
+/* 테이블 전체 스타일: 중앙 정렬, 좌우 여백 50px 제외 */
+.table-custom {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: calc(100% - 50px);
+    min-width: 1600px;
+}
+
+.table-custom th,
+.table-custom td {
+    vertical-align: middle !important;
+}
+
+/* 미디어 쿼리로 최소 너비 조정 */
+@media (max-width: 1600px) {
+    .table-custom {
+        min-width: 1400px;
+    }
+}
+@media (max-width: 1400px) {
+    .table-custom {
+        min-width: 1200px;
+    }
+}
+@media (max-width: 1200px) {
+    .table-custom {
+        min-width: 100%;
+    }
+}
+
+/* 테이블 전용 컨테이너: 좌우 여백 제거 (HTML에서 container-fluid에 인라인 스타일로 처리함) */
+.table-wrapper {
+    margin: 0;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* CSV 다운로드 버튼 영역: 테이블 바로 위, 우측 정렬 */
+.csv-download-buttons {
+    text-align: right;
+    margin-bottom: 10px;
+}

@@ -1,147 +1,152 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>서고관리 시스템 - 메인 대시보드</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <meta charset="UTF-8">
+  <title>서고관리 시스템 - 메인 대시보드</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <style>
+    /* footer 높이만큼 메인 컨텐츠 영역에 여백 추가 */
+    .main-content {
+      padding-bottom: 70px;
+    }
+  </style>
 </head>
 <body>
-
-    <!-- ✅ 네비게이션 바 -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">서고관리 시스템</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="/documents">보유목록 관리</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">대출/반납 관리</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">평가/폐기 관리</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">검색/활용</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">로그</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">통계</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- ✅ 검색 기능 -->
-    <div class="container mt-4 text-center">
-        <h2>기록물 통합 검색</h2>
-        <form method="GET" action="/documents" class="d-flex justify-content-center">
-            <input type="text" name="search_query" class="form-control w-50" placeholder="기록물을 검색하세요" value="{{ request.args.get('search_query', '') }}">
-            <button type="submit" class="btn btn-primary ms-2">검색</button>
-        </form>
+  <!-- 네비게이션 바 -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">서고관리 시스템</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#">보유목록 관리</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">대출/반납 관리</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">평가/폐기 관리</a></li>
+          <li class="nav-item"><a class="nav-link" href="/search">검색/활용</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">로그</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">통계</a></li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <!-- ✅ 기록관 보유현황 (보존기간별) -->
-    <div class="container mt-4">
-        <h4>기록관 보유현황 (보존기간별)</h4>
-        <table class="table table-bordered text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>구분</th>
-                    <th>합계</th>
-                    <th>영구</th>
-                    <th>준영구</th>
-                    <th>30년</th>
-                    <th>10년</th>
-                    <th>5년</th>
-                    <th>3년</th>
-                    <th>1년</th>
-                    <th>미확인</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>합계</td>
-                    <td>{{ total_sums["합계"] }}</td>
-                    <td>{{ total_sums["영구"] }}</td>
-                    <td>{{ total_sums["준영구"] }}</td>
-                    <td>{{ total_sums["30년"] }}</td>
-                    <td>{{ total_sums["10년"] }}</td>
-                    <td>{{ total_sums["5년"] }}</td>
-                    <td>{{ total_sums["3년"] }}</td>
-                    <td>{{ total_sums["1년"] }}</td>
-                    <td>{{ total_sums["미확인"] }}</td>
-                </tr>
-                {% for location, data in storage_data.items() %}
-                <tr>
-                    <td>{{ location }}</td>
-                    <td>{{ location_totals[location] }}</td>
-                    <td>{{ data["영구"] }}</td>
-                    <td>{{ data["준영구"] }}</td>
-                    <td>{{ data["30년"] }}</td>
-                    <td>{{ data["10년"] }}</td>
-                    <td>{{ data["5년"] }}</td>
-                    <td>{{ data["3년"] }}</td>
-                    <td>{{ data["1년"] }}</td>
-                    <td>{{ data["미확인"] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <h4>기록관 보유현황 (생산 유형별)</h4>
-        <table class="table table-bordered text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th>구분</th>
-                    <th>합계</th>
-                    <th>문서</th>
-                    <th>카드</th>
-                    <th>대장</th>
-                    <th>도면</th>
-                    <th>필름</th>
-                    <th>앨범</th>
-                    <th>테이프</th>
-                    <th>간행물</th>
-                    <th>행정박물</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- ✅ 전체 합계 -->
-                <tr>
-                    <td>합계</td>
-                    <td>{{ total_format_sums["합계"] }}</td>
-                    <td>{{ total_format_sums["문서"] }}</td>
-                    <td>{{ total_format_sums["카드"] }}</td>
-                    <td>{{ total_format_sums["대장"] }}</td>
-                    <td>{{ total_format_sums["도면"] }}</td>
-                    <td>{{ total_format_sums["필름"] }}</td>
-                    <td>{{ total_format_sums["앨범"] }}</td>
-                    <td>{{ total_format_sums["테이프"] }}</td>
-                    <td>{{ total_format_sums["간행물"] }}</td>
-                    <td>{{ total_format_sums["행정박물"] }}</td>
-                </tr>
-        
-                <!-- ✅ 제1기록관, 제2기록관, 행정박물관 개별 데이터 추가 -->
-                {% for location in ["제1기록관", "제2기록관", "행정박물관"] %}
-                <tr>
-                    <td>{{ location }}</td>
-                    <td>{{ location_format_totals.get(location, 0) }}</td>
-                    <td>{{ format_data[location].get("문서", 0) }}</td>
-                    <td>{{ format_data[location].get("카드", 0) }}</td>
-                    <td>{{ format_data[location].get("대장", 0) }}</td>
-                    <td>{{ format_data[location].get("도면", 0) }}</td>
-                    <td>{{ format_data[location].get("필름", 0) }}</td>
-                    <td>{{ format_data[location].get("앨범", 0) }}</td>
-                    <td>{{ format_data[location].get("테이프", 0) }}</td>
-                    <td>{{ format_data[location].get("간행물", 0) }}</td>
-                    <td>{{ format_data[location].get("행정박물", 0) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>        
+  <!-- 메인 컨텐츠 영역 -->
+  <div class="container mt-4 main-content">
+    <!-- 통합 검색 폼 (검색 시 /search로 이동) -->
+    <div class="text-center mb-4">
+      <h2>기록물 통합 검색</h2>
+      <form method="GET" action="/search" class="d-flex justify-content-center">
+        <input type="text" name="search_query" class="form-control w-50" placeholder="기록물을 검색하세요" value="{{ request.args.get('search_query', '') }}">
+        <button type="submit" class="btn btn-primary ms-2">검색</button>
+      </form>
     </div>
+    
+    <!-- 통계 테이블 예시 (보존기간별, 생산 유형별 등) -->
+    <h4>기록관 보유현황 (보존기간별)</h4>
+    <table class="table table-bordered text-center">
+      <thead class="table-primary">
+        <tr>
+          <th>구분</th>
+          <th>합계</th>
+          <th>영구</th>
+          <th>준영구</th>
+          <th>30년</th>
+          <th>10년</th>
+          <th>5년</th>
+          <th>3년</th>
+          <th>1년</th>
+          <th>미확인</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>합계</td>
+          <td>{{ total_sums["합계"] }}</td>
+          <td>{{ total_sums["영구"] }}</td>
+          <td>{{ total_sums["준영구"] }}</td>
+          <td>{{ total_sums["30년"] }}</td>
+          <td>{{ total_sums["10년"] }}</td>
+          <td>{{ total_sums["5년"] }}</td>
+          <td>{{ total_sums["3년"] }}</td>
+          <td>{{ total_sums["1년"] }}</td>
+          <td>{{ total_sums["미확인"] }}</td>
+        </tr>
+        {% for location, data in storage_data.items() %}
+        <tr>
+          <td>{{ location }}</td>
+          <td>{{ location_totals[location] }}</td>
+          <td>{{ data["영구"] }}</td>
+          <td>{{ data["준영구"] }}</td>
+          <td>{{ data["30년"] }}</td>
+          <td>{{ data["10년"] }}</td>
+          <td>{{ data["5년"] }}</td>
+          <td>{{ data["3년"] }}</td>
+          <td>{{ data["1년"] }}</td>
+          <td>{{ data["미확인"] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    <!-- Footer -->
-    <footer class="text-center py-3 bg-light">
-        <small>© 2025 서고관리 시스템 | Version 0.1</small>
-    </footer>
+    <h4>기록관 보유현황 (생산 유형별)</h4>
+    <table class="table table-bordered text-center">
+      <thead class="table-primary">
+        <tr>
+          <th>구분</th>
+          <th>합계</th>
+          <th>문서</th>
+          <th>카드</th>
+          <th>대장</th>
+          <th>도면</th>
+          <th>필름</th>
+          <th>앨범</th>
+          <th>테이프</th>
+          <th>간행물</th>
+          <th>행정박물</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>합계</td>
+          <td>{{ total_format_sums["합계"] }}</td>
+          <td>{{ total_format_sums["문서"] }}</td>
+          <td>{{ total_format_sums["카드"] }}</td>
+          <td>{{ total_format_sums["대장"] }}</td>
+          <td>{{ total_format_sums["도면"] }}</td>
+          <td>{{ total_format_sums["필름"] }}</td>
+          <td>{{ total_format_sums["앨범"] }}</td>
+          <td>{{ total_format_sums["테이프"] }}</td>
+          <td>{{ total_format_sums["간행물"] }}</td>
+          <td>{{ total_format_sums["행정박물"] }}</td>
+        </tr>
+        {% for location in ["제1기록관", "제2기록관", "행정박물관"] %}
+        <tr>
+          <td>{{ location }}</td>
+          <td>{{ location_format_totals.get(location, 0) }}</td>
+          <td>{{ format_data[location].get("문서", 0) }}</td>
+          <td>{{ format_data[location].get("카드", 0) }}</td>
+          <td>{{ format_data[location].get("대장", 0) }}</td>
+          <td>{{ format_data[location].get("도면", 0) }}</td>
+          <td>{{ format_data[location].get("필름", 0) }}</td>
+          <td>{{ format_data[location].get("앨범", 0) }}</td>
+          <td>{{ format_data[location].get("테이프", 0) }}</td>
+          <td>{{ format_data[location].get("간행물", 0) }}</td>
+          <td>{{ format_data[location].get("행정박물", 0) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Footer: 항상 하단에 고정 -->
+  <footer class="text-center py-3 bg-light fixed-bottom">
+    <small>© 2025 서고관리 시스템 | Version 0.1</small>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
