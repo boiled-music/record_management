@@ -135,7 +135,13 @@
             <td>{{ doc.quantity }}</td>
             <td>{{ doc.folder_title }}</td>
             <td>{{ doc.additional_info }}</td>
-            <td>{{ doc.dual_preservation }}</td>
+            <td>
+              {% if doc.dual_preservation == 1 or doc.dual_preservation == '1' %}
+                O
+              {% else %}
+                X
+              {% endif %}
+            </td>
             <td>{{ doc.notes }}</td>
           </tr>
           {% endfor %}
